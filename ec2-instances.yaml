@@ -48,3 +48,6 @@
   tasks:
     - name: Ping the instance
       ansible.builtin.ping:
+
+- name: Import the Docker installation playbook
+  import_playbook: install_docker.yml
