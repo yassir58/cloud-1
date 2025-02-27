@@ -1,0 +1,50 @@
+---
+- name: Provision and configure AWS EC2 instance
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create EC2 key pair
+      amazon.aws.ec2_key:
+        name: mykey
+        region: us-east-1
+      register: keyout
+      no_log: true
+
+    - name: Save private key to file
+      copy:
+        content: "{{ keyout.key.private_key }}"
+        dest: ./private/mykey.pem
+        mode: '0400'
+      when: keyout.changed
+
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: cloud-1-instance
+        key_name: mykey
+        instance_type: t2.micro
+        image_id: ami-04b4f1a9cf54c11d0
+        region: us-east-1
+        security_group: default
+        wait: yes
+        tags:
+          Name: cloud-1-instance
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host:
+        name: "{{ ec2.instances[0].public_ip_address }}"
+        groups: launched
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: ./private/mykey.pem
+
+    - name: Set permissions for the private key
+      ansible.builtin.file:
+        path: ./private/mykey.pem
+        mode: '0400'
+
+- name: Configure the launched EC2 instance
+  hosts: launched
+  gather_facts: no
+  tasks:
+    - name: Ping the instance
+      ansible.builtin.ping:
