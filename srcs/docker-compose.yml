@@ -1,0 +1,119 @@
+
+services:
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    image: mariadb
+    networks:
+      - inception-network
+    env_file:
+      - .env
+    volumes:
+      - wp-database:/var/lib/mysql
+    restart: always
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - wp-files:/var/www/wordpress
+    ports:
+      - "9000:9000"
+    image: wordpress
+    networks:
+      - inception-network
+    env_file: 
+      - .env
+    restart: always
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    depends_on:
+      - wordpress
+    ports:
+      - "443:443"
+    image: nginx
+    networks:
+      - inception-network
+    volumes:
+        - wp-files:/var/www/wordpress
+    restart: always
+  redis:
+    container_name: redis
+    build: ./requirements/bonus/redis
+    ports:
+      - "6379:6379"
+    image: redis
+    networks:
+      - inception-network
+  static-website:
+    container_name: static-website
+    build: ./requirements/bonus/static-website
+    ports:
+     - "1234:1234"
+    image: static-website
+    restart: always
+  adminer:
+    container_name: adminer
+    build: ./requirements/bonus/adminer
+    image: adminer
+    ports:
+     - "8000:8000"
+    restart: always
+    networks:
+      - inception-network
+  cadvisor:
+    container_name: cadvisor
+    build: ./requirements/bonus/cadvisor
+    image: cadvisor-img
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+    depends_on:
+      - adminer
+  ftp:
+    container_name: ftp
+    build: ./requirements/bonus/ftp 
+    image: ftp-img
+    ports:
+      - "21:21"
+      - "20:20"
+      - "40000-40005:40000-40005"
+    depends_on:
+      - wordpress
+    env_file:
+      - .env 
+    volumes:
+      - wp-files:/home/ftp-user/ftp-files
+    networks:
+      - inception-network
+networks:
+  inception-network:
+    driver: bridge
+    name: inception-network
+volumes:
+  wp-database:
+    name: wp-database
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /Users/yassir/data/wp-database
+  wp-files:
+    name: wp-files
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /Users/yassir/data/wp-files
+      
+      

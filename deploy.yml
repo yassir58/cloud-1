@@ -1,4 +1,7 @@
 ---
+- name: Create and Configure instance security group
+  import_playbook: ./scripts/configure_security.yml
+
 - name: Provision and configure AWS EC2 instance
   hosts: localhost
   gather_facts: no
@@ -24,7 +27,7 @@
         instance_type: t2.micro
         image_id: ami-04b4f1a9cf54c11d0
         region: us-east-1
-        security_group: default
+        security_group: cloud-1-sg
         wait: yes
         tags:
           Name: cloud-1-instance
@@ -42,6 +45,7 @@
         path: ./private/mykey.pem
         mode: '0400'
 
+
 - name: Configure the launched EC2 instance
   hosts: launched
   gather_facts: no
@@ -50,4 +54,6 @@
       ansible.builtin.ping:
 
 - name: Import the Docker installation playbook
-  import_playbook: install_docker.yml
+  import_playbook: ./scripts/install_docker.yml
+- name: Create project directory and copy source files
+  import_playbook: ./scripts/copy_project_source.yml

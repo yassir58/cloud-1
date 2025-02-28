@@ -1,0 +1,17 @@
+---
+- name: Create and copy porject source files to instance
+  hosts: launched
+  gather_facts: no
+  vars:
+    srcs_dir: "../srcs"
+  tasks:
+    - name: create project directory iside instance
+      ansible.builtin.shell: |
+        mkdir -p /cloud-1
+      become: true 
+    - name: Copy Mariadb directory
+      ansible.builtin.copy:
+        src: "{{ srcs_dir }}"  
+        dest: /cloud-1
+        mode: '0755'
+      become: true 
