@@ -21,3 +21,5 @@ else
     sudo mkdir -p  /home/$@/data/wp-database
     echo "Creating database directory in /home/$@/data/wp-database."
 fi
+
+export MY_PUBLIC_IP=$(curl -s https://ifconfig.me

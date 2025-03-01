@@ -1,0 +1,30 @@
+---
+- name: Setup instance
+  hosts: launched
+  become: true
+  vars:
+    username: "yelatman"
+    user_password: "{{ 'password123' | password_hash('sha512') }}"
+    hostname: "yelatman.42.fr"
+
+  tasks:
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - make
+          - docker-compose
+        state: present
+    - name: Create the user with a hashed password
+      ansible.builtin.user:
+        name: "{{ username }}"
+        password: "{{ user_password }}"
+        state: present
+    - name: create database dir and wordpress dir
+      ansible.builtin.shell: |
+        mkdir -p /home/ubuntu/wp-data /home/ubuntu/wp-files
+      become: true
+    

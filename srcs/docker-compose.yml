@@ -107,13 +107,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /Users/yassir/data/wp-database
+      device: /home/ubuntu/wp-data
   wp-files:
     name: wp-files
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /Users/yassir/data/wp-files
+      device: /home/ubuntu/wp-files
       
       

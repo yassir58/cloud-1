@@ -6,15 +6,13 @@ network  =	inception-network
 BLUE = \033[0;32m
 RESET = \033[0m
 
-all: configure up
+all:  up
 
 up:
 	@echo  "${BLUE}starting the project ...${RESET}"
 	docker-compose -f ./docker-compose.yml up --build -d
 
-configure:
-	@echo  "${BLUE}configuring the project  ...${RESET}"
-	@bash ./requirements/tools/configure.sh	$(user)
+
 
 rebuild:
 	@echo  "${BLUE}rebuilding the project ...${RESET}"

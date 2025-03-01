@@ -9,7 +9,7 @@
       ansible.builtin.shell: |
         mkdir -p /cloud-1
       become: true 
-    - name: Copy Mariadb directory
+    - name: Copy source directory
       ansible.builtin.copy:
         src: "{{ srcs_dir }}"  
         dest: /cloud-1

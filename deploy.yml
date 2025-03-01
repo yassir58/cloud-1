@@ -57,3 +57,13 @@
   import_playbook: ./scripts/install_docker.yml
 - name: Create project directory and copy source files
   import_playbook: ./scripts/copy_project_source.yml
+- name: Setup project before deployement
+  import_playbook: ./scripts/setup.yml
+
+- name: deploy project
+  hosts: launched
+  become: true
+  tasks:
+  - name: run docker compose and make project
+    ansible.builtin.shell: |
+      cd /cloud-1/srcs && make
