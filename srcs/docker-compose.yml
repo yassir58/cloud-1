@@ -50,6 +50,7 @@ services:
     image: redis
     networks:
       - inception-network
+    restart: always
   static-website:
     container_name: static-website
     build: ./requirements/bonus/static-website
@@ -96,6 +97,7 @@ services:
       - wp-files:/home/ftp-user/ftp-files
     networks:
       - inception-network
+    restart: always
 networks:
   inception-network:
     driver: bridge

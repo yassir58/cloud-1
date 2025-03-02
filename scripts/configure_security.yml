@@ -4,11 +4,15 @@
   gather_facts: no
   vars:
     region: us-east-1
-    my_public_ip: "196.113.137.210"      # Replace with your public IP address
+    my_public_ip: "{{ lookup('ansible.builtin.env', 'MY_PUBLIC_IP') }}"   # Replace with your public IP address
     security_group_name: cloud-1-sg
     security_group_description: "Security group allowing SSH access only from my IP"
 
   tasks:
+
+    - name: Get the HOME environment variable
+      debug:
+        msg: "{{ lookup('ansible.builtin.env', 'MY_PUBLIC_IP') }}"
     - name: Create or update security group for SSH access
       amazon.aws.ec2_group:
         name: "{{ security_group_name }}"
@@ -19,6 +23,19 @@
             from_port: 22
             to_port: 22
             cidr_ip: "{{ my_public_ip }}/32"
+          - proto: tcp 
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp 
+            from_port: 1234
+            to_port: 1234
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp 
+            from_port: 8080
+            to_port: 8080
+            cidr_ip: "{{ my_public_ip }}/32"
+
         rules_egress:
           - proto: all
             cidr_ip: 0.0.0.0/0
